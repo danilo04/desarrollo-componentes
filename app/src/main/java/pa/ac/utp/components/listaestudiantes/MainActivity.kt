@@ -20,34 +20,28 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import pa.ac.utp.components.listaestudiantes.ui.components.StudentRow
 import pa.ac.utp.components.listaestudiantes.ui.theme.ListaEstudiantesTheme
 import pa.ac.utp.components.listaestudiantes.ui.utils.recomposeHighlighter
 import pa.ac.utp.components.listaestudiantes.ui.viewmodel.StudentViewModel
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: StudentViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val onClick = { index: Int ->
-            Toast.makeText(this, "Click on $index", Toast.LENGTH_SHORT).show()
-            //viewModel.onClick(index)
-        }
-
         setContent {
-            val uiState = viewModel.uiState.collectAsState(StudentViewModel.UiState.Loading)
-
             ListaEstudiantesTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                     val navController = rememberNavController()
-                    StudentsNavHost(studentViewModel = viewModel, navController = navController)
+                    StudentsNavHost(navController = navController)
                 }
             }
         }
@@ -55,7 +49,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun StudentListScreen(viewModel: StudentViewModel, onClick: (Int) -> Unit) {
+fun StudentListScreen(onClick: (Int) -> Unit) {
+    val viewModel = hiltViewModel<StudentViewModel>()
     val uiState = viewModel.uiState.collectAsState(StudentViewModel.UiState.Loading)
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -89,7 +84,6 @@ fun StudentListScreen(viewModel: StudentViewModel, onClick: (Int) -> Unit) {
 
 @Composable
 fun StudentsNavHost(
-    studentViewModel: StudentViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = "list-students"
@@ -101,14 +95,12 @@ fun StudentsNavHost(
     ) {
         composable("list-students") {
             StudentListScreen(
-                studentViewModel,
                 onClick = { index: Int -> navController.navigate("profile/$index") },
             )
         }
         composable("profile/{userId}") { backStackEntry ->
             ProfileScreen(
                 userId = backStackEntry.arguments?.getString("userId"),
-                studentViewModel = studentViewModel
             ) {
                 navController.popBackStack()
             }
@@ -119,7 +111,6 @@ fun StudentsNavHost(
 @Composable
 fun ProfileScreen(
     userId: String?,
-    studentViewModel: StudentViewModel,
     onNavigateToFriends: () -> Unit,
     /*...*/
 ) {

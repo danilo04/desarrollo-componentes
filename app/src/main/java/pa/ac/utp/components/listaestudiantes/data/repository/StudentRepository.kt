@@ -5,8 +5,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import pa.ac.utp.components.listaestudiantes.R
 import pa.ac.utp.components.listaestudiantes.data.model.Student
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class StudentRepository {
+@Singleton
+class StudentRepository @Inject constructor() {
     suspend fun getAllStudents(): List<Student> = withContext(Dispatchers.IO) {
         delay(1000)
         return@withContext listOf(
