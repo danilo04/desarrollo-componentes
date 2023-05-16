@@ -32,6 +32,14 @@ class StudentViewModel @Inject constructor(
         }
     }
 
+    fun addStudent(student: Student) {
+        viewModelScope.launch {
+            studentRepository.addStudent(student)
+            val students = studentRepository.getAllStudents()
+            _uiState.value = UiState.StudentList(students)
+        }
+    }
+
     sealed interface UiState {
         object Loading : UiState
         data class StudentList(

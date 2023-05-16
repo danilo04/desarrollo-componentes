@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -26,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import pa.ac.utp.components.listaestudiantes.data.model.Student
 import pa.ac.utp.components.listaestudiantes.ui.components.StudentRow
 import pa.ac.utp.components.listaestudiantes.ui.theme.ListaEstudiantesTheme
 import pa.ac.utp.components.listaestudiantes.ui.utils.recomposeHighlighter
@@ -55,28 +58,35 @@ fun StudentListScreen(onClick: (Int) -> Unit) {
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 15.dp, vertical = 30.dp)
-                .recomposeHighlighter(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Column(modifier = Modifier
+            .fillMaxSize()) {
 
-        ) {
-            when (val state = uiState.value) {
-                StudentViewModel.UiState.Loading -> {
-                    item {
-                        Text(text = "Loading")
-                    }
-                }
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp, vertical = 30.dp)
+                    .recomposeHighlighter(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
 
-                is StudentViewModel.UiState.StudentList -> {
-                    state.students.forEachIndexed { index, student ->
+                ) {
+                when (val state = uiState.value) {
+                    StudentViewModel.UiState.Loading -> {
                         item {
-                            StudentRow(student = student, state.selected, index, onClick)
+                            Text(text = "Loading")
+                        }
+                    }
+
+                    is StudentViewModel.UiState.StudentList -> {
+                        state.students.forEachIndexed { index, student ->
+                            item {
+                                StudentRow(student = student, state.selected, index, onClick)
+                            }
                         }
                     }
                 }
+            }
+            Button(onClick = { viewModel.addStudent(Student("Danilo", "Dominguez", "7-xx-xx", R.drawable.student2)) }) {
+                Text("Add Student")
             }
         }
     }
