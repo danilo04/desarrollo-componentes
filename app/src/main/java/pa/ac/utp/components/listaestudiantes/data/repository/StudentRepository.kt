@@ -1,35 +1,48 @@
 package pa.ac.utp.components.listaestudiantes.data.repository
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import pa.ac.utp.components.listaestudiantes.R
+import pa.ac.utp.components.listaestudiantes.StudentListApplication
 import pa.ac.utp.components.listaestudiantes.data.model.Student
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class StudentRepository @Inject constructor() {
+class StudentRepository @Inject constructor(
+    @ApplicationContext val context: Context
+) {
     suspend fun getAllStudents(): List<Student> = withContext(Dispatchers.IO) {
         delay(1000)
-        return@withContext listOf(
-            Student(name = "Laury", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student1),
-            Student(name = "Mel", lastname = "Smith", idNumber = "METO-764-1881", image = R.drawable.student2),
-            Student(name = "Jose", lastname = "Arenales", idNumber = "6-xx-xx", image = R.drawable.student1),
-            Student(name = "Rumi", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Nila", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Joseph", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Cristian", lastname = "Arenales", idNumber = "2-xx-xx", image = R.drawable.student2),
-            Student(name = "Dimas", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student1),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-            Student(name = "Ivonne", lastname = "Arenales", idNumber = "4-xx-xx", image = R.drawable.student2),
-        )
+
+        return@withContext context
+            .openFileInput(StudentListApplication.STUDENT_LIST_FILE)
+            .bufferedReader()
+            .useLines { lines: Sequence<String> ->
+                lines.map { line ->
+                    val parts = line.split(",")
+                    val image = if (parts[3] == "1") {
+                        R.drawable.student1
+                    } else {
+                        R.drawable.student2
+                    }
+                    Student(
+                        name = parts[0],
+                        lastname = parts[1],
+                        idNumber = parts[2],
+                        image = image
+                    )
+                }.toList().sortedBy { it.name }
+        }
+    }
+
+    suspend fun addStudent(student: Student) = withContext(Dispatchers.IO) {
+        context.openFileOutput(StudentListApplication.STUDENT_LIST_FILE, Context.MODE_APPEND).use {
+            it.write("${student.name},${student.lastname},${student.idNumber},2\n".toByteArray())
+        }
     }
 }
