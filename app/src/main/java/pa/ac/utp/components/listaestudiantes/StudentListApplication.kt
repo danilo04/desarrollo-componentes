@@ -11,6 +11,7 @@ import java.io.File
 class StudentListApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
         GlobalScope.launch {
             val studentListFile = File(filesDir, STUDENT_LIST_FILE)
             if (!studentListFile.exists()) {
