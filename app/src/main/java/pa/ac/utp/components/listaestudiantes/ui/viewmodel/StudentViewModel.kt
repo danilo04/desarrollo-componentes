@@ -22,7 +22,8 @@ class StudentViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             val students = studentRepository.getAllStudents()
-            _uiState.value = UiState.StudentList(students)
+            val canEatInClass = studentRepository.canEatInClass()
+            _uiState.value = UiState.StudentList(students, canEatInClass = canEatInClass)
         }
     }
 
@@ -32,11 +33,31 @@ class StudentViewModel @Inject constructor(
         }
     }
 
+    fun changeEatInClass(value: Boolean) {
+        viewModelScope.launch {
+            studentRepository.eatInClass(value)
+            if (_uiState.value is UiState.StudentList) {
+                val canEatInClass = studentRepository.canEatInClass()
+                _uiState.value = (_uiState.value as UiState.StudentList).copy(canEatInClass = canEatInClass)
+            }
+        }
+    }
+
     fun addStudent(student: Student) {
         viewModelScope.launch {
             studentRepository.addStudent(student)
             val students = studentRepository.getAllStudents()
-            _uiState.value = UiState.StudentList(students)
+            val canEatInClass = studentRepository.canEatInClass()
+            _uiState.value = UiState.StudentList(students, canEatInClass = canEatInClass)
+        }
+    }
+
+    fun deleteStudent(student: Student) {
+        viewModelScope.launch {
+            studentRepository.deleteStudent(student)
+            val students = studentRepository.getAllStudents()
+            val canEatInClass = studentRepository.canEatInClass()
+            _uiState.value = UiState.StudentList(students, canEatInClass = canEatInClass)
         }
     }
 
@@ -44,7 +65,8 @@ class StudentViewModel @Inject constructor(
         object Loading : UiState
         data class StudentList(
             val students: List<Student>,
-            val selected: Int? = null
+            val selected: Int? = null,
+            val canEatInClass: Boolean
         ) : UiState
     }
 }
