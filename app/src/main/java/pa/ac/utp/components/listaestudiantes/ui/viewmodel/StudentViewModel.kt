@@ -52,6 +52,15 @@ class StudentViewModel @Inject constructor(
         }
     }
 
+    fun deleteStudent(student: Student) {
+        viewModelScope.launch {
+            studentRepository.deleteStudent(student)
+            val students = studentRepository.getAllStudents()
+            val canEatInClass = studentRepository.canEatInClass()
+            _uiState.value = UiState.StudentList(students, canEatInClass = canEatInClass)
+        }
+    }
+
     sealed interface UiState {
         object Loading : UiState
         data class StudentList(

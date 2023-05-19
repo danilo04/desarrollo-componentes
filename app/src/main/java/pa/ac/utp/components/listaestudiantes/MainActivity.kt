@@ -59,6 +59,10 @@ class MainActivity : ComponentActivity() {
 fun StudentListScreen(onClick: (Int) -> Unit) {
     val viewModel = hiltViewModel<StudentViewModel>()
     val uiState = viewModel.uiState.collectAsState(StudentViewModel.UiState.Loading)
+    val onClickDelete = { student: Student ->
+        viewModel.deleteStudent(student)
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -83,7 +87,7 @@ fun StudentListScreen(onClick: (Int) -> Unit) {
                     is StudentViewModel.UiState.StudentList -> {
                         state.students.forEachIndexed { index, student ->
                             item {
-                                StudentRow(student = student, state.selected, index, onClick)
+                                StudentRow(student = student, index, onClick, onClickDelete)
                             }
                         }
 
@@ -109,7 +113,7 @@ fun StudentListScreen(onClick: (Int) -> Unit) {
                     }
                 }
             }
-            Button(onClick = { viewModel.addStudent(Student("Danilo", "Dominguez", "7-xx-xx", R.drawable.student2)) }) {
+            Button(onClick = { viewModel.addStudent(Student(0, "Danilo", "Dominguez", "7-xx-xx")) }) {
                 Text("Add Student")
             }
         }
