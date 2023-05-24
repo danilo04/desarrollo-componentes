@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import pa.ac.utp.components.listaestudiantes.data.model.Student
+import pa.ac.utp.components.listaestudiantes.data.databasemodel.Student
 import pa.ac.utp.components.listaestudiantes.data.repository.StudentRepository
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package pa.ac.utp.components.listaestudiantes.data.model
+package pa.ac.utp.components.listaestudiantes.data.databasemodel
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

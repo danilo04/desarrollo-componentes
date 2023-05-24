@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import pa.ac.utp.components.listaestudiantes.R
-import pa.ac.utp.components.listaestudiantes.data.model.Student
+import pa.ac.utp.components.listaestudiantes.data.databasemodel.Student
 import pa.ac.utp.components.listaestudiantes.ui.utils.recomposeHighlighter
 
 @Composable
