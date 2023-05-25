@@ -1,10 +1,8 @@
 package pa.ac.utp.components.listaestudiantes
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
@@ -21,7 +17,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,10 +27,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import pa.ac.utp.components.listaestudiantes.data.model.Student
+import pa.ac.utp.components.listaestudiantes.data.databasemodel.Student
 import pa.ac.utp.components.listaestudiantes.ui.components.StudentRow
 import pa.ac.utp.components.listaestudiantes.ui.theme.ListaEstudiantesTheme
 import pa.ac.utp.components.listaestudiantes.ui.utils.recomposeHighlighter
+import pa.ac.utp.components.listaestudiantes.ui.viewmodel.PublicApiViewModel
 import pa.ac.utp.components.listaestudiantes.ui.viewmodel.StudentViewModel
 
 @AndroidEntryPoint
@@ -136,10 +132,8 @@ fun StudentsNavHost(
                 onClick = { index: Int -> navController.navigate("profile/$index") },
             )
         }
-        composable("profile/{userId}") { backStackEntry ->
-            ProfileScreen(
-                userId = backStackEntry.arguments?.getString("userId"),
-            ) {
+        composable("profile/{userId}") {
+            ProfileScreen {
                 navController.popBackStack()
             }
         }
@@ -148,13 +142,22 @@ fun StudentsNavHost(
 
 @Composable
 fun ProfileScreen(
-    userId: String?,
     onNavigateToFriends: () -> Unit,
     /*...*/
 ) {
-    /*...*/
+    val viewModel = hiltViewModel<PublicApiViewModel>()
+    val uiState = viewModel.uiState.collectAsState()
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(text = "See profile of user ID $userId")
+        when (val state = uiState.value) {
+            PublicApiViewModel.UiState.Loading -> {
+                Text("Loading")
+            }
+            is PublicApiViewModel.UiState.PublicApiState -> {
+                Text("Name: ${state.publicApi?.api}")
+                Text("Description: ${state.publicApi?.description}")
+                Text("Link: ${state.publicApi?.link}")
+            }
+        }
         Button(onClick = onNavigateToFriends) {
             Text(text = "Back")
         }

@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import pa.ac.utp.components.listaestudiantes.data.model.Student
+import pa.ac.utp.components.listaestudiantes.data.databasemodel.Student
 
 @Dao
 interface StudentDao {

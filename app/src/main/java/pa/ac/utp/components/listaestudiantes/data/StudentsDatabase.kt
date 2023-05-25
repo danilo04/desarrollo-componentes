@@ -8,7 +8,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import pa.ac.utp.components.listaestudiantes.data.dao.StudentDao
-import pa.ac.utp.components.listaestudiantes.data.model.Student
+import pa.ac.utp.components.listaestudiantes.data.databasemodel.Student
 
 private const val DATABASE_VERSION = 1
 private const val DATABASE_NAME = "StudentDatabase"
